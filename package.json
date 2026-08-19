@@ -1,0 +1,9 @@
+{
+  "name": "ai-in-strategy-map",
+  "version": "1.0.0",
+  "private": true,
+  "description": "The map from AI in Strategy #2: Do we need humans to do strategy?",
+  "scripts": {
+    "start": "node server.js"
+  }
+}

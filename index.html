@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Map · AI in Strategy #2: Do we need humans to do strategy?</title>
+<meta name="description" content="An interactive 4x4 map of AI in strategy. Tap any cell to find out whether humans are still needed there. From AI in Strategy #2, Helsinki.">
+<meta property="og:title" content="Do we need humans to do strategy?">
+<meta property="og:description" content="Sixteen cells, three kinds of water. The interactive map from AI in Strategy #2, Helsinki.">
+<meta property="og:type" content="website">
+<!-- After deploying, point og:image and twitter:image at https://YOUR-RAILWAY-DOMAIN/cover.jpg -->
+<meta property="og:image" content="https://images.lumacdn.com/uploads/19/5dcd4b0b-d651-476e-bb1b-515a65a7224e.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://images.lumacdn.com/uploads/19/5dcd4b0b-d651-476e-bb1b-515a65a7224e.jpg">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Schibsted+Grotesk:ital,wght@0,400;0,500;0,700;1,400&family=Spline+Sans+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --abyss:#06222e;
+  --deep:#0b4a5c;
+  --ocean:#0e6e77;
+  --lagoon:#1fa79b;
+  --shallow:#8fdcd2;
+  --foam:#dff3f1;
+  --sky:#eef6f7;
+  --chrome:#c3ced4;
+  --chrome-dark:#7d8b93;
+  --ink:#08303c;
+  --paper:#ffffff;
+  --maxw:1060px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation:none!important;transition:none!important}}
+body{
+  font-family:'Schibsted Grotesk',system-ui,sans-serif;
+  background:var(--sky);
+  color:var(--ink);
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+.mono{font-family:'Spline Sans Mono',monospace}
+a{color:var(--ocean)}
+::selection{background:var(--lagoon);color:#fff}
+
+/* ---------- hero ---------- */
+.hero{
+  position:relative;
+  min-height:78vh;
+  display:flex;
+  align-items:flex-end;
+  background:linear-gradient(180deg, #9fc9d8 0%, #2e8d95 55%, #0b4a5c 100%);
+  overflow:hidden;
+}
+.hero-img{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;object-position:center 60%;
+}
+.hero-veil{
+  position:absolute;inset:0;
+  background:linear-gradient(180deg, rgba(6,34,46,0) 30%, rgba(6,34,46,.72) 82%, rgba(6,34,46,.9) 100%);
+}
+.hero-inner{
+  position:relative;
+  width:100%;max-width:var(--maxw);
+  margin:0 auto;
+  padding:56px 20px 46px;
+  color:#f2fbfa;
+}
+.eyebrow{
+  font-family:'Spline Sans Mono',monospace;
+  font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+  color:#bfe9e2;
+}
+.hero h1{
+  font-family:'Young Serif',serif;
+  font-weight:400;
+  font-size:clamp(34px,7vw,68px);
+  line-height:1.04;
+  margin:14px 0 10px;
+  max-width:14ch;
+  text-wrap:balance;
+}
+.wire{display:block;margin:6px 0 18px}
+.hero-sub{
+  font-size:clamp(16px,2.2vw,19px);
+  max-width:54ch;color:#d8efec;
+}
+.hero-sub strong{color:#fff;font-weight:700}
+.hero-meta{
+  margin-top:22px;display:flex;flex-wrap:wrap;gap:10px 22px;
+  font-family:'Spline Sans Mono',monospace;font-size:12.5px;color:#a9d9d3;
+}
+
+/* ---------- sections ---------- */
+.section{max-width:var(--maxw);margin:0 auto;padding:56px 20px 8px}
+.section-head{max-width:62ch;margin-bottom:26px}
+.kicker{
+  font-family:'Spline Sans Mono',monospace;font-size:12px;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--ocean);
+}
+h2{
+  font-family:'Young Serif',serif;font-weight:400;
+  font-size:clamp(24px,4vw,34px);line-height:1.15;margin:8px 0 12px;
+}
+.lede{font-size:17px;color:#2b4f5a}
+
+/* provocation */
+.prov{max-width:760px}
+.prov p{font-size:17px;color:#274a54;line-height:1.65;margin-bottom:16px}
+
+/* ladders */
+.ladders{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:8px}
+@media(max-width:720px){.ladders{grid-template-columns:1fr}}
+.ladder{
+  background:var(--paper);
+  border:1px solid #cfe0e2;
+  border-radius:14px;
+  padding:22px 22px 16px;
+}
+.ladder h3{
+  font-family:'Young Serif',serif;font-weight:400;font-size:20px;margin-bottom:4px;
+}
+.ladder .tag{font-family:'Spline Sans Mono',monospace;font-size:11.5px;color:var(--chrome-dark);letter-spacing:.1em;text-transform:uppercase}
+.ladder ol{list-style:none;margin-top:14px}
+.ladder li{
+  display:grid;grid-template-columns:44px 1fr;gap:12px;
+  padding:9px 0;border-top:1px dashed #d5e2e4;
+  font-size:14.5px;color:#274a54;
+}
+.ladder li b{font-weight:700;color:var(--ink)}
+.ladder li .rung{
+  font-family:'Spline Sans Mono',monospace;font-size:12px;font-weight:600;
+  color:var(--ocean);padding-top:2px;
+}
+
+/* ---------- the grid ---------- */
+.map-wrap{
+  background-color:var(--abyss);
+  border-radius:20px;
+  padding:26px 18px 22px;
+  margin-top:10px;
+  color:#e6f4f2;
+  background-image:
+    linear-gradient(180deg, rgba(6,34,46,.86) 0%, rgba(6,34,46,.6) 48%, rgba(7,42,54,.86) 100%),
+    url('cover.jpg');
+  background-size:cover;
+  background-position:center 68%;
+}
+.map-top{display:flex;gap:14px;justify-content:space-between;align-items:flex-start}
+.tap-chip{
+  flex:none;align-self:flex-start;
+  font-family:'Spline Sans Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+  background:var(--lagoon);color:#04322d;font-weight:700;
+  padding:9px 15px;border-radius:999px;
+  box-shadow:inset 0 0 0 1px rgba(4,50,45,.2);
+  animation:tappulse 2.2s ease-in-out 3;
+}
+@keyframes tappulse{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
+.axes-note{margin:0 0 16px;display:grid;gap:5px}
+.axes-note p{font-size:12.5px;color:#bfe3dd;line-height:1.5;margin:0;max-width:74ch}
+.axes-note .axis-name{font-family:'Spline Sans Mono',monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:#8fd0c9;margin-right:7px}
+.map-axis-x{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:8px;
+  margin:0 0 8px 82px;
+}
+.map-axis-x span{
+  font-family:'Spline Sans Mono',monospace;font-size:11px;
+  color:#9fd3cc;text-align:center;letter-spacing:.06em;
+}
+.map-body{display:grid;grid-template-columns:74px 1fr;gap:8px}
+.map-axis-y{display:grid;grid-template-rows:repeat(4,1fr);gap:8px}
+.map-axis-y span{
+  font-family:'Spline Sans Mono',monospace;font-size:11px;color:#9fd3cc;
+  place-self:center end;text-align:right;line-height:1.3;letter-spacing:.04em;
+  white-space:nowrap;padding-right:2px;
+}
+#grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;min-width:0}
+.cell{
+  appearance:none;border:0;cursor:pointer;min-width:0;
+  border-radius:12px;
+  padding:12px 10px 11px;
+  min-height:88px;
+  text-align:left;
+  display:flex;flex-direction:column;justify-content:space-between;gap:8px;
+  font-family:inherit;
+  transition:transform .15s ease, box-shadow .15s ease;
+}
+.cell:hover{transform:translateY(-2px)}
+.cell:active{transform:scale(.97)}
+.cell:focus-visible{outline:3px solid #fff;outline-offset:2px}
+.cell .code{
+  font-family:'Spline Sans Mono',monospace;font-size:10.5px;letter-spacing:.08em;
+  opacity:.85;
+}
+.cell .name{font-size:13.5px;font-weight:700;line-height:1.25;overflow-wrap:break-word;hyphens:auto}
+.cell.live{background:#bfeee6;color:#06423c;box-shadow:inset 0 0 0 1px rgba(6,66,60,.12)}
+.cell.live .code{color:#0c6b5f}
+.cell.gated{background:#0e5d73;color:#e7f6f4;box-shadow:inset 0 0 0 1px rgba(255,255,255,.14)}
+.cell.gated .code{color:#8fd0c9}
+.cell.open{
+  background:rgba(6,34,46,.35);color:#dcece9;
+  box-shadow:inset 0 0 0 1.5px rgba(195,206,212,.55);
+  border:0;outline:1px dashed rgba(195,206,212,.55);outline-offset:-6px;
+}
+.cell.open .code{color:#b9c9cf}
+.legend{
+  display:flex;flex-wrap:wrap;gap:10px 22px;margin:18px 0 0 0;
+  font-size:13px;color:#cfe7e3;align-items:center;
+}
+.legend .sw{width:14px;height:14px;border-radius:4px;display:inline-block;margin-right:8px;vertical-align:-2px}
+.legend .sw.live{background:#bfeee6}
+.legend .sw.gated{background:#0e5d73;box-shadow:inset 0 0 0 1px rgba(255,255,255,.25)}
+.legend .sw.open{background:rgba(6,34,46,.3);box-shadow:inset 0 0 0 1.5px rgba(195,206,212,.7)}
+@media(max-width:560px){
+  .section{padding:44px 14px 8px}
+  .map-wrap{padding:16px 10px 14px;border-radius:16px}
+  .map-axis-x{margin-left:58px;gap:6px}
+  .map-body{grid-template-columns:52px 1fr;gap:6px}
+  .map-axis-y{gap:6px}
+  #grid{gap:6px}
+  .map-axis-y span{font-size:9px;padding-right:0}
+  .map-axis-x span{font-size:9px;letter-spacing:0}
+  .cell{min-height:78px;padding:8px 7px;border-radius:10px;gap:6px}
+  .cell .code{font-size:9.5px}
+  .cell .name{font-size:11px}
+  .legend{font-size:12px;gap:8px 16px}
+  .axes-note p{font-size:11.5px}
+  .map-top{flex-direction:column;gap:10px}
+}
+
+/* ---------- how the map fills ---------- */
+.fills{display:grid;grid-template-columns:1fr;gap:16px;margin-top:8px;max-width:840px}
+.card{
+  background:var(--paper);border:1px solid #cfe0e2;border-radius:14px;padding:22px;
+}
+.card h3{font-family:'Young Serif',serif;font-weight:400;font-size:20px;margin-bottom:10px}
+.card p{font-size:15px;color:#274a54;margin-bottom:10px}
+.card p:last-child{margin-bottom:0}
+/* ---------- sheet / modal ---------- */
+.overlay{
+  position:fixed;inset:0;background:rgba(6,34,46,.55);
+  backdrop-filter:blur(2px);
+  display:none;z-index:40;
+}
+.overlay.on{display:block}
+.sheet{
+  position:fixed;z-index:50;
+  left:50%;bottom:0;transform:translateX(-50%) translateY(102%);
+  width:min(680px,100%);
+  max-height:88vh;overflow-y:auto;
+  background:var(--paper);
+  border-radius:18px 18px 0 0;
+  box-shadow:0 -18px 50px rgba(6,34,46,.35);
+  transition:transform .28s cubic-bezier(.32,.72,.34,1);
+  overscroll-behavior:contain;
+}
+.sheet.on{transform:translateX(-50%) translateY(0)}
+@media(min-width:760px){
+  .sheet{bottom:auto;top:50%;border-radius:18px;transform:translate(-50%,-46%);opacity:0;pointer-events:none;transition:opacity .2s ease, transform .2s ease}
+  .sheet.on{transform:translate(-50%,-50%);opacity:1;pointer-events:auto}
+}
+.sheet-head{
+  position:sticky;top:0;background:var(--paper);
+  padding:18px 22px 12px;border-bottom:1px solid #e2ecee;
+  display:flex;align-items:flex-start;justify-content:space-between;gap:14px;
+  z-index:2;
+}
+.sheet-head .codes{font-family:'Spline Sans Mono',monospace;font-size:12px;color:var(--chrome-dark);letter-spacing:.08em}
+.sheet-head h3{font-family:'Young Serif',serif;font-weight:400;font-size:26px;line-height:1.1;margin-top:4px}
+.status{
+  display:inline-block;margin-top:10px;
+  font-family:'Spline Sans Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+  padding:4px 10px;border-radius:999px;
+}
+.status.live{background:#bfeee6;color:#06423c}
+.status.gated{background:#0e5d73;color:#e7f6f4}
+.status.open{background:#eef2f4;color:#4c5c64;box-shadow:inset 0 0 0 1.5px var(--chrome)}
+.close{
+  appearance:none;border:1px solid #d5e2e4;background:#fff;color:var(--ink);
+  width:38px;height:38px;border-radius:10px;font-size:19px;cursor:pointer;flex:none;
+  line-height:1;
+}
+.close:hover{background:var(--foam)}
+.sheet-body{padding:18px 22px 22px}
+.sheet-body h4{
+  font-family:'Spline Sans Mono',monospace;font-size:11.5px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--ocean);margin:18px 0 6px;
+}
+.sheet-body h4:first-child{margin-top:0}
+.sheet-body p{font-size:15.5px;color:#25464f;margin-bottom:8px}
+.sheet-body .ask{
+  background:var(--foam);border-radius:12px;padding:14px 16px;
+  font-size:15.5px;color:#0a3d43;
+}
+.sheet-foot{
+  display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;
+  padding:16px 22px 22px;border-top:1px solid #e2ecee;
+}
+.navbtns{display:flex;gap:8px}
+.navbtn{
+  appearance:none;border:1px solid #d5e2e4;background:#fff;color:var(--ink);
+  padding:10px 14px;border-radius:10px;font-family:'Spline Sans Mono',monospace;
+  font-size:12.5px;cursor:pointer;
+}
+.navbtn:hover{background:var(--foam)}
+.claude{
+  display:inline-block;text-decoration:none;
+  background:var(--lagoon);color:#04322d;font-weight:700;
+  padding:11px 16px;border-radius:10px;font-size:14.5px;
+  box-shadow:inset 0 0 0 1px rgba(4,50,45,.15);
+}
+.claude:hover{background:#27b8ab}
+
+/* ---------- footer ---------- */
+footer{
+  margin-top:64px;background:var(--abyss);color:#bcd9d5;
+  padding:46px 20px 60px;
+}
+.foot-inner{max-width:var(--maxw);margin:0 auto}
+.foot-inner h2{color:#fff}
+footer p{font-size:14px;max-width:70ch;margin-bottom:10px}
+footer a{color:#8fdcd2}
+.papers{margin:16px 0 22px;padding-left:0;list-style:none}
+.papers li{
+  font-size:13.5px;padding:7px 0;border-top:1px dashed rgba(143,220,210,.25);
+}
+.papers li b{color:#e6f4f2;font-weight:500}
+.foot-meta{font-family:'Spline Sans Mono',monospace;font-size:12px;color:#7fb5ae;margin-top:22px}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <img class="hero-img" src="cover.jpg" alt="A chrome wire grid floating over clear turquoise sea" onerror="this.style.display='none'">
+  <div class="hero-veil"></div>
+  <div class="hero-inner">
+    <p class="eyebrow">AI in Strategy #2 · Helsinki</p>
+    <h1>Do we need humans to do strategy?</h1>
+    <svg class="wire" width="220" height="16" viewBox="0 0 220 16" aria-hidden="true"><path d="M2 8 C 30 -2, 60 18, 90 8 S 150 -2, 178 8 S 210 16, 218 6" fill="none" stroke="#cfe0e6" stroke-width="2.5" stroke-linecap="round" opacity=".9"/></svg>
+    <p class="hero-sub">Strategy is the work we've assumed machines can't touch: too ambiguous, too consequential, too human. That assumption is now a live question, and we turned the question into a map you can argue with.</p>
+    <p class="hero-meta"><span>AI in Strategy: an event series on what machine intelligence does to strategy work</span><span>#2 hosted by Ville Tikka &amp; Johannes Koponen · 19 August 2026</span></p>
+  </div>
+</header>
+
+<section class="section" id="provocation">
+  <div class="section-head">
+    <p class="kicker">The provocation</p>
+  </div>
+  <div class="prov">
+    <p><em>Consider Phlebas</em>, the first novel in Iain M. Banks's Culture series, is one of AI researcher Demis Hassabis's favourite books. In Banks's future, humans live extraordinarily rich lives, but when something truly difficult needs to be figured out, superintelligent machines called Minds do the strategic thinking.</p>
+    <p>What if Banks got that part right?</p>
+    <p>We tend to think of strategy as fundamentally human work: understanding the world, making sense of uncertainty, imagining possible futures, choosing between alternatives, and deciding what to do. But these are precisely the capabilities AI is getting better at.</p>
+    <p>An AI can already scan more information than a strategy team, generate more alternatives, simulate more scenarios, challenge more assumptions and update its view of the world more frequently than any annual strategy process. And this may only be the beginning.</p>
+  </div>
+</section>
+
+<section class="section" id="ladders">
+  <div class="section-head">
+    <p class="kicker">First, the two questions</p>
+    <h2>Every "can AI do strategy" argument splits into two arguments</h2>
+    <p class="lede">One is about thinking, the other about trust. Strategy Science's special issue on the question keeps them apart, and so does this map: reasoning depth runs up the side, granted authority runs along the bottom.</p>
+  </div>
+  <div class="ladders">
+    <div class="ladder">
+      <p class="tag">Vertical axis</p>
+      <h3>How deep is the reasoning?</h3>
+      <ol>
+        <li><span class="rung">L1</span><span><b>Predict.</b> What happens if things continue? Reading the world as it is.</span></li>
+        <li><span class="rung">L2</span><span><b>Intervene.</b> What happens if we act? Estimating the effect of a move before making it.</span></li>
+        <li><span class="rung">L3</span><span><b>Analogize.</b> What if we did what they did? Borrowing logic from other worlds, no local data required.</span></li>
+        <li><span class="rung">L4</span><span><b>Invent.</b> What future could we make true? Composing a model of something no data describes yet. Walmart before Walmart.</span></li>
+      </ol>
+    </div>
+    <div class="ladder">
+      <p class="tag">Horizontal axis</p>
+      <h3>How much authority does it get?</h3>
+      <ol>
+        <li><span class="rung">T1</span><span><b>Inform.</b> The machine watches and reports. You decide.</span></li>
+        <li><span class="rung">T2</span><span><b>Recommend.</b> It proposes moves. You keep the pen.</span></li>
+        <li><span class="rung">T3</span><span><b>Operate.</b> It acts on its own inside limits you set, and gets scored constantly.</span></li>
+        <li><span class="rung">T4</span><span><b>Execute.</b> It commits the organization. The chair, not the analyst.</span></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="map">
+  <div class="section-head">
+    <p class="kicker">The map</p>
+    <h2>Sixteen cells, three kinds of water</h2>
+    <p class="lede">Clear water means AI already works there today. Deep water means the ability may exist but the trust infrastructure doesn't. Open sea means we genuinely don't know if machines can do it at all. <strong>Tap a cell.</strong></p>
+  </div>
+  <div class="map-wrap">
+    <div class="map-top">
+    <div class="axes-note">
+      <p><span class="axis-name">Across</span>Machine authority: how much the AI may decide on its own, from watching (T1) to committing the firm (T4).</p>
+      <p><span class="axis-name">Up</span>Reasoning depth: how hard the thinking is, from reading trends (L1) to inventing futures (L4).</p>
+    </div>
+    <span class="tap-chip">Tap any cell</span>
+    </div>
+    <div class="map-axis-x" aria-hidden="true">
+      <span>T1 inform</span><span>T2 recommend</span><span>T3 operate</span><span>T4 execute</span>
+    </div>
+    <div class="map-body">
+      <div class="map-axis-y" aria-hidden="true">
+        <span>L4<br>invent</span><span>L3<br>analogize</span><span>L2<br>intervene</span><span>L1<br>predict</span>
+      </div>
+      <div id="grid" role="list" aria-label="The sixteen cells of the AI in strategy map"></div>
+    </div>
+    <div class="legend">
+      <span><span class="sw live"></span>Clear water: live today</span>
+      <span><span class="sw gated"></span>Deep water: trust not built yet</span>
+      <span><span class="sw open"></span>Open sea: capability contested</span>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="fills">
+  <div class="section-head">
+    <p class="kicker">Reading the map</p>
+    <h2>The frontier is L-shaped, not diagonal</h2>
+  </div>
+  <div class="fills">
+    <div class="card">
+      <h3>Two tides, one empty corner</h3>
+      <p>Autonomy and intelligence advance from different directions. Along the bottom row, machines win authority because their decisions get scored thousands of times: pricing, allocation, experiments. Verification makes delegation cheap, so the water clears from the left and stays clear deep into T3.</p>
+      <p>Up the left side, the deeper reasoning gets AI first as a helper: retrieval, sparring, copilots. Plenty of intelligence, almost no authority, because a new theory of the future can only be tested by betting the company on it.</p>
+      <p>So the map fills along two edges at once and the top right corner stays empty. That corner has a name in science fiction: in Iain M. Banks's Culture novels, the Minds run civilization end to end. Tap the corner cell to see the three separate locks on that door.</p>
+    </div>
+    
+  </div>
+</section>
+
+<footer>
+  <div class="foot-inner">
+    <h2>Where this comes from</h2>
+    <p>Made for the people who came to AI in Strategy #2 in Helsinki (19 August 2026), and built on the <a href="https://pubsonline.informs.org/toc/stsc/11/1">Strategy Science special issue "Can AI Do Strategy?" (vol. 11, no. 1, 2026)</a>. The two axes are the editors' causal ladder and delegation ladder; the cell verdicts translate the issue's eight papers for people who have better things to do than read journals. Any sharpness in the phrasing is ours, not the professors'.</p>
+    <ul class="papers">
+      <li><b>Csaszar, Lee, Zemsky &amp; Zenger</b> · the two ladders, and why AI enters strategy where performance is measurable, not where thinking is deepest</li>
+      <li><b>McBride</b> · language models as "mean articulation machines" that voice the average of what they read</li>
+      <li><b>Qu, Kumar &amp; Tong</b> · machine predictions of how markets react to acquisitions, useful before and after the deal</li>
+      <li><b>Kanis, Mann &amp; Stumpf-Wollersheim</b> · LLMs widen thinking, thin it out, and leave foresight unchanged</li>
+      <li><b>Allen &amp; McDonald</b> · the strategy benchmark where the newest models lose to MBA students</li>
+      <li><b>Sen, Workiewicz &amp; Puranam</b> · machines find every analogy, humans know which ones fit</li>
+      <li><b>Camuffo, Gambardella, Kazemi &amp; Pandey</b> · "Aristotle", the theory copilot that helped the experienced and flattered the educated</li>
+      <li><b>Neshenko &amp; Ryall</b> · markets of machine strategists settle into comfortable "good times" and stop exploring</li>
+    </ul>
+    <p><a href="https://www.villetikka.com">www.villetikka.com</a></p>
+    <p class="foot-meta">Tap cells. Argue with Claude. Pass it on. · Made with Claude</p>
+  </div>
+</footer>
+
+<div class="overlay" id="overlay"></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+  <div class="sheet-head">
+    <div>
+      <div class="codes" id="sheetCode"></div>
+      <h3 id="sheetTitle"></h3>
+      <span class="status" id="sheetStatus"></span>
+    </div>
+    <button class="close" id="closeBtn" aria-label="Close">×</button>
+  </div>
+  <div class="sheet-body" id="sheetBody"></div>
+  <div class="sheet-foot">
+    <div class="navbtns">
+      <button class="navbtn" id="prevBtn">‹ prev</button>
+      <button class="navbtn" id="nextBtn">next ›</button>
+    </div>
+    <a class="claude" id="claudeBtn" target="_blank" rel="noopener">Argue with Claude</a>
+  </div>
+</div>
+
+<script>
+var PROMPT_BASE = "I attended 'AI in Strategy #2: Do we need humans to do strategy?', an event in Helsinki. It used a 4x4 map that crosses reasoning depth (L1 predict, L2 intervene, L3 reason by analogy, L4 invent new strategic theories) with machine authority (T1 inform, T2 recommend, T3 operate within limits, T4 execute). ";
+var PROMPT_TAIL = " Make the strongest case that humans are NOT needed in this cell, then the strongest case that they are. Then tell me which side you find more convincing and why. Be sharp and concrete, no hedging.";
+
+var CELLS = [
+{code:"L4 \u00d7 T1", name:"Theory scaffolding", status:"live",
+ body:"<h4>In plain terms</h4><p>Level 4 is where strategy stops analyzing the world and starts proposing a new one: a model of a future no dataset describes, because it doesn't exist yet. At Tier 1 the machine is your sparring wall. It maps the assumptions inside your idea, generates variations, and attacks the causal chain until the weak links show.</p><h4>For example</h4><p>Working through 'what would have to be true' for a new venture, with the AI drafting every assumption and then arguing against each one in turn.</p><h4>What the research found</h4><p>The special issue's editors are precise about the division here: humans do the theorizing, machines support composition and critique. McBride's work explains why. Recombining and stress-testing existing ideas sits comfortably inside what language models do. The genuinely contrarian idea does not, because these models are built to voice the average of everything they have read.</p><div class='ask'><b>Ask your own org:</b> which part of your current strategy is an actual theory, and which part is last year with better formatting?</div>",
+ claude:"The cell L4 x T1 is 'Theory scaffolding': AI as a sparring wall for humans inventing new strategic theories."},
+{code:"L4 \u00d7 T2", name:"Theory copilot", status:"live",
+ body:"<h4>In plain terms</h4><p>One step more ambitious: a system designed for theory-making that works alongside you. Structured roles, causal maps, probabilities you have to defend. A partner with a method rather than a chat window with opinions.</p><h4>For example</h4><p>'Aristotle', built at Bocconi: a small team of specialized AI agents that walks a manager from a fuzzy problem to a testable theory of value.</p><h4>What the research found</h4><p>Camuffo, Gambardella, Kazemi and Pandey tested it on 976 managers, against plain GPT-4o and against no help at all. Experienced managers produced better theories without getting more sure of themselves. The most educated participants got more confident without getting any better. The design lesson: match the system to the user, or you are manufacturing confidence instead of quality.</p><div class='ask'><b>Ask your own org:</b> honestly, which would your org harvest from a theory copilot: quality, or certainty?</div>",
+ claude:"The cell L4 x T2 is 'Theory copilot': purpose-built AI systems like Bocconi's Aristotle that help humans construct strategic theories. In testing, they improved experienced managers but only inflated the confidence of the most educated ones."},
+{code:"L4 \u00d7 T3", name:"Thesis factory?", status:"open",
+ body:"<h4>In plain terms</h4><p>Machines generating and pursuing their own business theories inside a portfolio: spin up a thesis, fund it small, kill it fast, learn, repeat. Note the question mark. Nobody runs this today.</p><h4>For example</h4><p>A venture studio whose deal flow, investment theses and kill decisions are machine-run, with humans as trustees rather than partners.</p><h4>What the research found</h4><p>The issue treats this cell as the plausible bridge toward the corner, and its logic is sound. The reason bold theories can't earn machine autonomy is that a company gets one real test per theory. A portfolio of small ones manufactures the repetition that trust requires. Sound logic, zero evidence so far. Watch this cell.</p><div class='ask'><b>Ask your own org:</b> would you rather your next strategy came from one brilliant human theory, or a hundred cheap machine ones?</div>",
+ claude:"The cell L4 x T3 is 'Thesis factory': the speculative idea of machines generating and testing many small business theories in a portfolio, to earn the track record that one big bet never can."},
+{code:"L4 \u00d7 T4", name:"The Mind (Banks)", status:"open",
+ body:"<h4>In plain terms</h4><p>The corner. A machine that invents the future and holds the authority to commit to it. In Iain M. Banks's Culture novels these are the Minds, and they don't advise the civilization. They run it, benevolently, while the humans pursue hobbies.</p><h4>For example</h4><p>There isn't one, and that absence is the most informative thing on this map.</p><h4>What the research found</h4><p>Three separate locks. Capability: McBride argues today's models are engineered to articulate consensus, and a real Level 4 move contradicts consensus several times at once. Institutions: decisions this rare, large and unscoreable fail every condition for earned autonomy. Dynamism: Neshenko and Ryall show that even a market of excellent machine strategists drifts into stable, profitable, exploration-free 'good times'. Banks conceded the same point in fiction. His utopia only produces stories because the Minds keep deliberately stirring the water.</p><div class='ask'><b>Ask your own org:</b> suppose the Mind existed and its strategy was provably excellent. What exactly would still be your job?</div>",
+ claude:"The cell L4 x T4 is 'The Mind': the science-fiction corner where a machine both invents strategy and executes it with full authority. It is locked three times over: capability limits, missing trust infrastructure, and the tendency of machine-run markets to settle into comfortable stagnation."},
+{code:"L3 \u00d7 T1", name:"Analogy scanning", status:"live",
+ body:"<h4>In plain terms</h4><p>Level 3 reasoning borrows: what happened when someone else faced this? At Tier 1 the machine is a search engine for precedents across every industry and era, surfacing cases you would never think to look for.</p><h4>For example</h4><p>Ask what your museum could learn from how airlines, gyms and streaming services run memberships. Fifty cases arrive in a minute.</p><h4>What the research found</h4><p>Sen, Workiewicz and Puranam raced humans against eight frontier models on exactly this. The models missed nothing; with a small hint they hit perfect recall. They also served up confident nonsense. Humans were the mirror image: they overlooked most of the valid analogies but almost never misapplied one.</p><div class='ask'><b>Ask your own org:</b> what's the best idea your field ever borrowed, and who spotted the analogy first?</div>",
+ claude:"The cell L3 x T1 is 'Analogy scanning': AI retrieving strategic precedents from every industry. Models find everything, including confident nonsense; humans find little but misapply less."},
+{code:"L3 \u00d7 T2", name:"Transplant proposals", status:"live",
+ body:"<h4>In plain terms</h4><p>Now the machine proposes the transplant itself: adopt platform pricing the way company X did, and here is how their logic maps onto yours. Your job shrinks to the hard part, judging whether the analogy actually fits.</p><h4>For example</h4><p>An AI arguing, clause by clause, that your consultancy should copy a law firm's subscription model.</p><h4>What the research found</h4><p>This is where Sen and colleagues land their division of labor: machine as generator, human as judge. Their warning deserves a poster. The machine's wrong analogies are internally coherent. They read exactly like insight. Human errors tend to be subtle misreadings of cause and effect; machine errors are surface resemblances wearing a suit.</p><div class='ask'><b>Ask your own org:</b> how would you catch a beautifully argued analogy that is simply wrong for your case?</div>",
+ claude:"The cell L3 x T2 is 'Transplant proposals': AI proposing business-model transplants from other industries while humans judge the fit. The danger is that a wrong machine analogy reads exactly like insight."},
+{code:"L3 \u00d7 T3", name:"Capped analogy bets", status:"gated",
+ body:"<h4>In plain terms</h4><p>Give the machine a budget to act on its analogies: enter the adjacent market, clone the playbook elsewhere, losses capped. The autonomy is bounded. The reasoning behind it is not.</p><h4>For example</h4><p>An AI empowered to launch small country pilots wherever its cross-market pattern says the model travels.</p><h4>What the research found</h4><p>The gate is that analogies fail slowly and politely. Feedback arrives late, tangled with everything else that happened, so the constant scoring that makes auto-pricing safe can't exist here yet. And the precision problem Sen's team measured becomes expensive at the exact moment the machine can spend.</p><div class='ask'><b>Ask your own org:</b> what's the smallest real bet you would let a machine place on an analogy it found by itself?</div>",
+ claude:"The cell L3 x T3 is 'Capped analogy bets': giving AI a bounded budget to act on analogies it finds. It is gated because analogy errors surface too slowly for the constant scoring that safe delegation needs."},
+{code:"L3 \u00d7 T4", name:"Blind extrapolation", status:"open",
+ body:"<h4>In plain terms</h4><p>Full authority to reposition the firm by analogy: the machine sees a pattern across markets and moves the company before anyone checks the mapping.</p><h4>For example</h4><p>'Every industry that digitized went subscription, so we're going subscription', executed as a decision instead of presented as a slide.</p><h4>What the research found</h4><p>Both locks close at once here. McBride's critique bites hardest: a model that voices the average of its training data can tell you what usually happened, and strategy is largely the art of knowing when you are the exception. The trust conditions, meanwhile, are nowhere in sight.</p><div class='ask'><b>Ask your own org:</b> name a famous strategy disaster that was really a Level 3 analogy nobody stress-tested.</div>",
+ claude:"The cell L3 x T4 is 'Blind extrapolation': a machine with authority to reposition a firm based on cross-market patterns. Contested, because averaged patterns can't tell you when your case is the exception."},
+{code:"L2 \u00d7 T1", name:"Effect estimates", status:"live",
+ body:"<h4>In plain terms</h4><p>One rung up from prediction: not 'what will happen' but 'what happens if we act'. The machine estimates the effect of a move before you make it, and hands you the analysis.</p><h4>For example</h4><p>An uplift model separating what a loyalty program would actually change from the customers who would have stayed anyway.</p><h4>What the research found</h4><p>The editors place a whole scientific tradition in this cell: causal inference, econometrics, experiment design. AI didn't invent any of it. It made it fast and cheap enough that skipping the analysis is now a choice rather than a constraint.</p><div class='ask'><b>Ask your own org:</b> when did your org last kill a beloved initiative because the effect estimate came back as 'none'?</div>",
+ claude:"The cell L2 x T1 is 'Effect estimates': AI estimating the causal effect of strategic moves before they are made, turning skipped analysis from a constraint into a choice."},
+{code:"L2 \u00d7 T2", name:"Tested proposals", status:"live",
+ body:"<h4>In plain terms</h4><p>The machine proposes the move and brings the evidence: run this campaign, drop that fee, and here is the test that says so. You still hold the pen.</p><h4>For example</h4><p>A growth tool proposing next week's experiment based on everything the last hundred taught it.</p><h4>What the research found</h4><p>A caution lives in this friendly-looking cell. Kanis, Mann and Stumpf-Wollersheim gave hundreds of people an LLM for a judgment task. Thinking got broader and shallower, information overload went up, the feeling of owning the judgment went down, and the predictions got no better. More input, same foresight, less ownership.</p><div class='ask'><b>Ask your own org:</b> has an AI recommendation ever left your team feeling more informed and less responsible at the same time?</div>",
+ claude:"The cell L2 x T2 is 'Tested proposals': AI recommending moves backed by experiments. Research shows LLM input widens human thinking, thins it out, weakens ownership, and improves foresight not at all."},
+{code:"L2 \u00d7 T3", name:"Auto experiments", status:"live",
+ body:"<h4>In plain terms</h4><p>The organization tests on autopilot. The system designs experiments, runs them, reads the results and ships the winners, all inside limits you set. Strategy's plumbing, automated.</p><h4>For example</h4><p>A marketplace continuously testing fees and ranking rules, rolling out whatever wins.</p><h4>What the research found</h4><p>Delegation logic at full strength: dense feedback, capped downside, a score everyone accepts. The editors' conditions for machine autonomy are all cheap to meet here, which is why this water cleared before anyone thought to call it 'AI doing strategy'.</p><div class='ask'><b>Ask your own org:</b> what's the biggest thing you would let an experiment platform change without calling a meeting?</div>",
+ claude:"The cell L2 x T3 is 'Auto experiments': autonomous experimentation platforms that design, run and ship tests within limits. Machine autonomy became normal here before anyone called it strategy."},
+{code:"L2 \u00d7 T4", name:"Big-bet handoff", status:"gated",
+ body:"<h4>In plain terms</h4><p>Letting the machine commit to the rare, large, irreversible moves: the merger, the exit, the pivot. The reasoning required is only Level 2. The trust required does not exist.</p><h4>For example</h4><p>An AI with standing authority to trigger an acquisition the moment its models say the price is right.</p><h4>What the research found</h4><p>Every condition for delegation fails at once. Big bets are rare, so there is no feedback stream. Enormous, so there is no capped downside. And unscoreable, because 'right' takes a decade to reveal itself. Qu, Kumar and Tong show machines can genuinely inform these calls by predicting how markets react to deals. Informing is Tier 2. Nobody has shown how a machine would be accountable at Tier 4.</p><div class='ask'><b>Ask your own org:</b> what would an AI have to survive, in public, before your board handed it a real budget?</div>",
+ claude:"The cell L2 x T4 is 'Big-bet handoff': delegating mergers and pivots to machines. Gated, because rare, irreversible, unscoreable decisions fail every condition that makes delegation rational."},
+{code:"L1 \u00d7 T1", name:"Forecast feeds", status:"live",
+ body:"<h4>In plain terms</h4><p>The machine reads more signals than any analyst team and reports what is coming if nothing changes: demand, churn, competitor moves. It watches. You decide.</p><h4>For example</h4><p>A retailer's dashboard predicting next quarter's demand by region, refreshed nightly.</p><h4>What the research found</h4><p>The editors' opening observation fits this cell like a glove: AI enters strategy where its output can be checked, and forecasts get checked every single day. This is the oldest clear water on the map.</p><div class='ask'><b>Ask your own org:</b> if the forecast is always right, who in your org still reads it critically?</div>",
+ claude:"The cell L1 x T1 is 'Forecast feeds': AI as an always-on forecasting layer, the first cell AI colonized because forecasts get verified constantly."},
+{code:"L1 \u00d7 T2", name:"Suggested targets", status:"live",
+ body:"<h4>In plain terms</h4><p>The machine moves from describing the future to nudging you around in it: reorder now, raise this price, call that customer first. Still entirely your call.</p><h4>For example</h4><p>A sales tool ranking which renewal accounts deserve a call this week.</p><h4>What the research found</h4><p>Qu, Kumar and Tong took this to the biggest stage there is: acquisitions. Models trained on past deals predicted how the stock market would greet new ones, and the predictions earned their keep twice. Before the deal, they sharpen target selection. After it, when reality disagrees with the model, managers investigate the gap and learn something.</p><div class='ask'><b>Ask your own org:</b> would you let a model shortlist your acquisition targets? Would you tell anyone?</div>",
+ claude:"The cell L1 x T2 is 'Suggested targets': AI ranking and recommending targets for action, including models that predict market reactions to acquisitions and teach managers something whenever reality disagrees."},
+{code:"L1 \u00d7 T3", name:"Pricing & allocation", status:"live",
+ body:"<h4>In plain terms</h4><p>Here the human steps out of the loop for bounded, repeating decisions. The machine reprices, reallocates and rebalances inside rules you wrote. Airlines and ad platforms have lived here for years.</p><h4>For example</h4><p>Dynamic pricing answering a competitor's discount at three in the morning without waking anyone.</p><h4>What the research found</h4><p>The bluntest lesson on the map: delegation follows verifiability, not intelligence. Thousands of small, scored decisions make trust cheap. Past a point, keeping a human sign-off on each one stops adding judgment and starts adding latency.</p><div class='ask'><b>Ask your own org:</b> name one decision your org still routes through a human purely out of habit.</div>",
+ claude:"The cell L1 x T3 is 'Pricing and allocation': machines autonomously repricing and reallocating within set rules. Proof that delegation follows verifiability rather than intelligence."},
+{code:"L1 \u00d7 T4", name:"Trend autopilot", status:"gated",
+ body:"<h4>In plain terms</h4><p>A firm steered end to end by extrapolation. The machine reads the trends and commits the company: no theory of the future, just exceptional pattern-matching holding real authority.</p><h4>For example</h4><p>A holding company whose chief executive is a model, reallocating the entire portfolio as the numbers move.</p><h4>What the research found</h4><p>Neshenko and Ryall built the formal model of this world. Firms hand strategy to learning machines; the machines become well calibrated; every choice looks optimal from the inside; and the market settles into comfortable profits where nobody explores the better business models sitting just out of view. The authors call the mood 'good times'. From inside, lock-in feels exactly like winning.</p><div class='ask'><b>Ask your own org:</b> how would your industry know it had locked in? What would it feel like? The uncomfortable answer: fine.</div>",
+ claude:"The cell L1 x T4 is 'Trend autopilot': a company run end to end by predictive AI. Gated, and dangerous, because markets of well-calibrated machine strategists settle into profitable stagnation that feels like winning."}
+];
+
+var STATUS_LABEL = {live:"Clear water \u00b7 live today", gated:"Deep water \u00b7 trust not built", open:"Open sea \u00b7 capability contested"};
+
+var grid = document.getElementById('grid');
+var overlay = document.getElementById('overlay');
+var sheet = document.getElementById('sheet');
+var current = -1;
+var lastTrigger = null;
+
+CELLS.forEach(function(c, i){
+  var b = document.createElement('button');
+  b.className = 'cell ' + c.status;
+  b.setAttribute('role','listitem');
+  b.innerHTML = "<span class='code'>" + c.code + "</span><span class='name'>" + c.name + "</span>";
+  b.addEventListener('click', function(){ lastTrigger = b; openCell(i); });
+  grid.appendChild(b);
+});
+
+function openCell(i){
+  current = i;
+  var c = CELLS[i];
+  document.getElementById('sheetCode').textContent = c.code;
+  document.getElementById('sheetTitle').textContent = c.name;
+  var st = document.getElementById('sheetStatus');
+  st.textContent = STATUS_LABEL[c.status];
+  st.className = 'status ' + c.status;
+  document.getElementById('sheetBody').innerHTML = c.body;
+  document.getElementById('claudeBtn').href = 'https://claude.ai/new?q=' + encodeURIComponent(PROMPT_BASE + c.claude + PROMPT_TAIL);
+  overlay.classList.add('on');
+  sheet.classList.add('on');
+  sheet.scrollTop = 0;
+  document.body.style.overflow = 'hidden';
+  document.getElementById('closeBtn').focus();
+}
+
+function closeSheet(){
+  overlay.classList.remove('on');
+  sheet.classList.remove('on');
+  document.body.style.overflow = '';
+  if(lastTrigger){ lastTrigger.focus(); }
+  current = -1;
+}
+
+document.getElementById('closeBtn').addEventListener('click', closeSheet);
+overlay.addEventListener('click', closeSheet);
+document.addEventListener('keydown', function(e){
+  if(current < 0) return;
+  if(e.key === 'Escape') closeSheet();
+  if(e.key === 'ArrowRight') openCell((current + 1) % 16);
+  if(e.key === 'ArrowLeft') openCell((current + 15) % 16);
+});
+document.getElementById('nextBtn').addEventListener('click', function(){ openCell((current + 1) % 16); });
+document.getElementById('prevBtn').addEventListener('click', function(){ openCell((current + 15) % 16); });
+</script>
+</body>
+</html>
